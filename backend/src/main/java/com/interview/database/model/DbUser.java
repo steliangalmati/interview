@@ -2,8 +2,8 @@ package com.interview.database.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -33,7 +33,7 @@ public class DbUser {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

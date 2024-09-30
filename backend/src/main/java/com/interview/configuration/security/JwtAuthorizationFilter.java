@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * Retrieves and validates the token if present in the request haders
+ * Retrieves and validates the token if present in the request headers
  */
 @Component
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
