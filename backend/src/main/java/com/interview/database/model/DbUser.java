@@ -21,7 +21,7 @@ public class DbUser {
     @EqualsAndHashCode.Include
     private Long userId;
 
-    @Column(name = "username", unique = true)
+    @Column(name = "username", unique = true, nullable = false)
     private String userName;
 
     @Column(name = "firstName")
@@ -30,14 +30,14 @@ public class DbUser {
     @Column(name = "lastName")
     private String lastName;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @UpdateTimestamp
+    @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
-    @CreatedDate
     private LocalDateTime updatedAt;
 }

@@ -33,7 +33,7 @@ public class UserResource {
         return userService.getUser(userId);
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<String> createUser(@RequestBody CreateUserDao createUserDao) {
         Long userId = userService.createUser(createUserDao);
 
