@@ -2,6 +2,7 @@ package com.interview.configuration.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +11,13 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private static final String SECRET_KEY = "my-secret-key";
-    private static final long EXPIRATION_TIME = 86400000; // 1 day
+    private static final long EXPIRATION_TIME = 86400000;
+    private final String SECRET_KEY;
+
+    public JwtUtils(@Value("${auth.secret-jwt-key}") String secretKey) {
+        this.SECRET_KEY = secretKey;
+
+    }
 
     public String generateToken(String username) {
         return Jwts.builder()

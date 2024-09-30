@@ -5,7 +5,6 @@ import com.interview.service.model.auth.UserLoginDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -21,7 +20,6 @@ public class UserLoginService {
     private final JwtUtils jwtUtils;
 
     public Map<String, String> loginUser(@Valid @NotNull UserLoginDao userLoginDao) {
-        try {
             UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userLoginDao.getUserName(), userLoginDao.getPassword()));
 
@@ -30,8 +28,5 @@ public class UserLoginService {
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             return response;
-        } catch (AuthenticationException e) {
-            throw new RuntimeException("Invalid credentials");
-        }
     }
 }

@@ -28,6 +28,11 @@ public class UserResource {
         return userService.getUsers(PageRequest.of(page, size));
     }
 
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId) {
+        userService.deleteUserById(userId);
+    }
+
     @GetMapping("/{userId}")
     public UserDao getUser(@PathVariable Long userId) {
         return userService.getUser(userId);

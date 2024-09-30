@@ -3,6 +3,7 @@ package com.interview.service;
 
 import com.interview.database.model.DbUser;
 import com.interview.database.repository.UserRepository;
+import com.interview.exception.ConflictException;
 import com.interview.exception.IllegalArgumentException;
 import com.interview.exception.NotFoundException;
 import com.interview.mapper.PageResponseMapper;
@@ -11,6 +12,7 @@ import com.interview.service.model.user.CreateUserDao;
 import com.interview.service.model.PagedResponse;
 import com.interview.service.model.user.UserDao;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
@@ -53,6 +56,11 @@ public class UserService {
         if (createUserDao.getUserId() != null) {
             throw new IllegalArgumentException("Id should not be provided for a new user");
         }
+
+        if (userRepository.findDbUserByUserName(createUserDao.getUserName()).isPresent()) {
+            throw new ConflictException("User name already exists");
+        }
+
         DbUser dbUser = UserMapper.createUserDaoToDbUserFunction().apply(createUserDao);
 
         // encrypt password
@@ -74,5 +82,13 @@ public class UserService {
         updatedDbUser.setPassword(dbUserOptional.get().getPassword());
 
         userRepository.save(updatedDbUser);
+    }
+
+    public void deleteUserById(@Valid @NotNull @Min(0) Long userId) {
+        try {
+            userRepository.deleteById(userId);
+        } catch (EmptyResultDataAccessException e) {
+            // ignored in case user already deleted
+        }
     }
 }
