@@ -1,49 +1,50 @@
 package com.interview.configuration.security;
 
 import com.interview.service.security.AppUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+@RequiredArgsConstructor
+public class SecurityConfiguration {
 
-    @Autowired
-    private AppUserDetailService appUserDetailService;
+    private final AppUserDetailService appUserDetailService;
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final CustomAuthenticationManager customAuthenticationManager;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(appUserDetailService).passwordEncoder(bCryptPasswordEncoder());
-    }
+    private final JwtUtils jwtUtils;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/api/v1/login").permitAll()
-                .antMatchers("/api/v1/users/register").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtUtils, appUserDetailService));
+    private final PasswordEncoder passwordEncoder;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers(
+                                "/h2-console",
+                                "/api/v1/users/register",
+                                "/api/v1/users/login")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .addFilter(new JwtAuthorizationFilter(customAuthenticationManager, jwtUtils, appUserDetailService))
+                .authenticationManager(new CustomAuthenticationManager(passwordEncoder, appUserDetailService));
+
+        return http.build();
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("api/v1/users/register", "/api/v1/login");
     }
 
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
 }

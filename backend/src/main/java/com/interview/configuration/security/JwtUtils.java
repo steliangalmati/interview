@@ -16,7 +16,6 @@ public class JwtUtils {
 
     public JwtUtils(@Value("${auth.secret-jwt-key}") String secretKey) {
         this.SECRET_KEY = secretKey;
-
     }
 
     public String generateToken(String username) {

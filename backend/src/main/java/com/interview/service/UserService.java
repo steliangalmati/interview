@@ -11,6 +11,9 @@ import com.interview.mapper.UserMapper;
 import com.interview.service.model.user.CreateUserDao;
 import com.interview.service.model.PagedResponse;
 import com.interview.service.model.user.UserDao;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -19,9 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Service
@@ -66,7 +66,8 @@ public class UserService {
         // encrypt password
         dbUser.setPassword(passwordEncoder.encode(createUserDao.getPassword()));
 
-        return userRepository.save(dbUser).getUserId();
+        DbUser save = userRepository.save(dbUser);
+        return save.getUserId();
     }
 
     public void updateUser(@Valid @NotNull UserDao userDao) {

@@ -1,8 +1,8 @@
 package com.interview.service.model.auth;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 
 @Data
 public class UserLoginDao {
